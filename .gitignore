@@ -9,4 +9,4 @@ output/
 Thumbs.db
 .vscode/
 .idea/
-# archive/saves/*.ck3
+archive/saves/*.ck3
