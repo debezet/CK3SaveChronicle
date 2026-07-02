@@ -20,3 +20,21 @@ Projekt oddziela dane źródłowe, raport Archiwisty, tekst Brata Mateusza oraz 
 4. Księga Brata Mateusza.
 5. Redakcja.
 6. Wydanie.
+
+## Chronicle Subject
+
+Od v0.5.0 Archiwista śledzi przede wszystkim **linię narracyjną kroniki**, nie historię państwa ani tytułu.
+
+Kronika Domu Wędrowyczów opisuje jedną gałąź rodu wywodzącą się od pierwszej grywalnej postaci i kolejnych grywalnych dziedziców lub dziedziczek.
+
+W praktyce oznacza to, że domyślnym celem raportu jest:
+
+> poprzedni zmarły, grywalny przodek aktualnej postaci.
+
+Nie jest to automatycznie:
+
+- poprzedni posiadacz Korony Wolski;
+- ojciec aktualnej postaci;
+- poprzedni władca konkretnego państwa.
+
+Historia tytułów i państw może być analizowana później jako osobna warstwa, ale nie wyznacza głównego bohatera kroniki.
