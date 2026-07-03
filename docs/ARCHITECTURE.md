@@ -4,13 +4,14 @@ Projekt oddziela dane źródłowe, raport Archiwisty, tekst Brata Mateusza oraz 
 
 ## Warstwy
 
-- `archive/saves/` — save'y CK3.
 - `archive/reports/` — raporty Archiwisty.
 - `chronicle/books/` — kanoniczny tekst ksiąg.
 - `chronicle/frontmatter/` — przedmowa i materiały początkowe.
 - `chronicle/appendices/` — genealogia, oś czasu, Uwagi Archiwisty.
 - `tools/` — przyszłe narzędzia.
 - `output/` — artefakty budowania.
+
+v0.5.2 - usunięto `archive/saves` ze względu na zbyt duży rozmiar katalogu, zamiast tego należy podawać pełne ścieżki do save'ów przechowywanych na dysku
 
 ## Workflow
 
@@ -38,3 +39,4 @@ Nie jest to automatycznie:
 - poprzedni władca konkretnego państwa.
 
 Historia tytułów i państw może być analizowana później jako osobna warstwa, ale nie wyznacza głównego bohatera kroniki.
+

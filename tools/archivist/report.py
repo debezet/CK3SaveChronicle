@@ -61,4 +61,4 @@ def render(c: Character, idx: CharacterIndex, memories: dict[int, Memory], curre
     lines.append("")
     lines.append("- [do uzupełnienia po ręcznej analizie]")
     lines.append("")
-    return "\\n".join(lines)
+    return "\n".join(lines)
