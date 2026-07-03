@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 import re
 from . import pdx
 from .names import normalize_name
+from .traits import TraitProfile, build_trait_lookup, parse_trait_profile
 
 @dataclass
 class Character:
@@ -25,8 +26,9 @@ class Character:
     children: list[int] = field(default_factory=list)
     memories: list[int] = field(default_factory=list)
     kills: list[int] = field(default_factory=list)
+    trait_profile: TraitProfile = field(default_factory=TraitProfile)
 
-def parse_character(cid: int, raw: str) -> Character:
+def parse_character(cid: int, raw: str, trait_lookup: list[str] | None = None) -> Character:
     def maybe_int(x):
         return int(x) if x and x.isdigit() else None
 
@@ -65,6 +67,7 @@ def parse_character(cid: int, raw: str) -> Character:
         children=pdx.repeated_numbers(raw, "child") + pdx.number_list(raw, "child"),
         memories=memories,
         kills=kills,
+        trait_profile=parse_trait_profile(raw, trait_lookup or []),
     )
 
 class CharacterIndex:
@@ -102,6 +105,7 @@ class CharacterIndex:
 
 def build_index(gamestate: str) -> CharacterIndex:
     idx = CharacterIndex()
+    trait_lookup = build_trait_lookup(gamestate)
     seen = set()
     for section_name in ["living", "dead_unprunable", "dead_prunable", "characters"]:
         section = pdx.named_block(gamestate, section_name)
@@ -113,7 +117,7 @@ def build_index(gamestate: str) -> CharacterIndex:
             if "first_name" not in raw and "birth" not in raw:
                 continue
             seen.add(cid)
-            idx.add(parse_character(cid, raw))
+            idx.add(parse_character(cid, raw, trait_lookup))
     return idx
 
 def find_current_id(gamestate: str) -> int | None:

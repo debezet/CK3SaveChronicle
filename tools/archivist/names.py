@@ -32,13 +32,10 @@ def normalize_name(value: str | None) -> str | None:
     return unicodedata.normalize("NFC", out)
 
 def normalize_text(value: str | None) -> str | None:
-    """Return text normalized only at Unicode-composition level.
+    """Return Unicode-normalized text without CK3 name decoding.
 
-    This intentionally does *not* decode CK3/Paradox escaped name
-    sequences like ``e_`` or ``L_``. Those sequences are meaningful only
-    for display names parsed from ``first_name``/``name`` fields; applying
-    them to localization keys corrupts values such as ``became_friends``
-    or ``nick_the_proud``.
+    Use normalize_name() only for character first_name/display name values.
+    Technical identifiers such as memory types and nickname keys must remain raw.
     """
     if value is None:
         return None

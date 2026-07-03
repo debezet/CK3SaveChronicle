@@ -3,6 +3,57 @@ from .characters import Character, CharacterIndex
 from .memories import Memory
 from .names import normalize_text
 
+
+def _format_values(values: list[str]) -> str:
+    return ", ".join(f"`{x}`" for x in values) if values else "brak"
+
+
+def _append_trait_section(lines: list[str], c: Character) -> None:
+    profile = c.trait_profile
+    lines.append("## Osobowość i cechy według save")
+    lines.append("")
+
+    if not profile.ids:
+        lines.append("- Brak zapisanych traitów.")
+        lines.append("")
+        return
+
+    lines.append("_Sekcja źródłowa: Archiwista wypisuje klucze mechanik CK3, bez interpretacji literackiej._")
+    lines.append("")
+    lines.append(f"- Cechy osobowości: {_format_values(profile.personality)}")
+    lines.append(f"- Edukacja: {_format_values(profile.education)}")
+    lines.append(f"- Styl życia i doświadczenie: {_format_values(profile.lifestyle)}")
+    lines.append(f"- Radzenie sobie ze stresem / nawyki: {_format_values(profile.coping)}")
+    lines.append(f"- Dowodzenie: {_format_values(profile.commander)}")
+    lines.append(f"- Zdrowie i ciało: {_format_values(profile.health_and_body)}")
+    lines.append(f"- Status, sława i piętna: {_format_values(profile.status)}")
+    lines.append(f"- Inne: {_format_values(profile.other)}")
+    if profile.unknown_ids:
+        lines.append("- Nierozpoznane ID traitów: " + ", ".join(f"`{x}`" for x in profile.unknown_ids))
+    lines.append("")
+
+
+def _append_profile_section(lines: list[str], c: Character, idx: CharacterIndex) -> None:
+    profile = c.trait_profile
+    lines.append("## Profil bohatera")
+    lines.append("")
+    lines.append("_Syntetyczna kartoteka źródłowa dla Redaktora i Brata Mateusza._")
+    lines.append("")
+    lines.append(f"- Zakres życia: {c.birth or 'brak danych'} – {c.death or 'brak danych'}")
+    lines.append(f"- Małżonkowie zapisani w raporcie: {len(c.spouses)}")
+    lines.append(f"- Dzieci zapisane w raporcie: {len(c.children)}")
+    lines.append(f"- Zabójstwa zapisane w save: {len(c.kills)}")
+    lines.append(f"- Wspomnienia zapisane w save: {len(c.memories)}")
+    if profile.personality:
+        lines.append("- Mechaniczny rdzeń osobowości: " + _format_values(profile.personality))
+    if profile.education:
+        lines.append("- Wykształcenie według gry: " + _format_values(profile.education))
+    notable = profile.lifestyle + profile.commander + profile.status
+    if notable:
+        lines.append("- Cechy pomocne narracyjnie: " + _format_values(notable))
+    lines.append("")
+
+
 def render(c: Character, idx: CharacterIndex, memories: dict[int, Memory], current: Character | None = None) -> str:
     lines = []
     lines.append(f"# Raport Archiwisty — {c.display_name or c.name or c.id}")
@@ -22,6 +73,7 @@ def render(c: Character, idx: CharacterIndex, memories: dict[int, Memory], curre
     lines.append(f"- Przyczyna śmierci: {normalize_text(c.death_reason) or 'brak danych'}")
     lines.append(f"- Kultura: {normalize_text(c.culture) or 'brak danych'}")
     lines.append("")
+    _append_trait_section(lines, c)
     lines.append("## Najbliższa rodzina")
     lines.append("")
     lines.append("- Małżonkowie: " + (", ".join(idx.name(x) for x in c.spouses) if c.spouses else "brak danych"))
@@ -37,6 +89,7 @@ def render(c: Character, idx: CharacterIndex, memories: dict[int, Memory], curre
     else:
         lines.append("- Brak zapisanych zabójstw.")
     lines.append("")
+    _append_profile_section(lines, c, idx)
     lines.append("## Wspomnienia")
     lines.append("")
     if c.memories:

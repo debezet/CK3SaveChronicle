@@ -12,6 +12,19 @@ _Poprzedni bohater kroniki względem aktualnej postaci: Marek (16793718)._
 - Przyczyna śmierci: death_battle
 - Kultura: brak danych
 
+## Osobowość i cechy według save
+
+_Sekcja źródłowa: Archiwista wypisuje klucze mechanik CK3, bez interpretacji literackiej._
+
+- Cechy osobowości: `vengeful`, `eccentric`, `brave`
+- Edukacja: `education_learning_1`
+- Styl życia i doświadczenie: `lifestyle_reveler`, `lifestyle_mystic`, `lifestyle_traveler`, `lifestyle_physician`, `lifestyle_wayfarer`, `lifestyle_hunter`, `lifestyle_poet`, `lifestyle_voyager`
+- Radzenie sobie ze stresem / nawyki: `drunkard`, `athletic`
+- Dowodzenie: `unyielding_defender`
+- Zdrowie i ciało: `whole_of_body`, `athletic`
+- Status, sława i piętna: `gallowsbait`, `populist_leader`, `tourney_participant`
+- Inne: brak
+
 ## Najbliższa rodzina
 
 - Małżonkowie: Ruuth (51364), Elżbieta (41211), Nasti (51288)
@@ -28,6 +41,19 @@ _Poprzedni bohater kroniki względem aktualnej postaci: Marek (16793718)._
 - JaromI_r (59347)
 - Pio (66590)
 - Jaume (16848891)
+
+## Profil bohatera
+
+_Syntetyczna kartoteka źródłowa dla Redaktora i Brata Mateusza._
+
+- Zakres życia: 843.1.1 – 920.8.18
+- Małżonkowie zapisani w raporcie: 3
+- Dzieci zapisane w raporcie: 10
+- Zabójstwa zapisane w save: 9
+- Wspomnienia zapisane w save: 111
+- Mechaniczny rdzeń osobowości: `vengeful`, `eccentric`, `brave`
+- Wykształcenie według gry: `education_learning_1`
+- Cechy pomocne narracyjnie: `lifestyle_reveler`, `lifestyle_mystic`, `lifestyle_traveler`, `lifestyle_physician`, `lifestyle_wayfarer`, `lifestyle_hunter`, `lifestyle_poet`, `lifestyle_voyager`, `unyielding_defender`, `gallowsbait`, `populist_leader`, `tourney_participant`
 
 ## Wspomnienia
 
