@@ -55,3 +55,11 @@ Wspomnienia w testowym save'ie znajdują się pod `character_memory_manager`, ni
 Zdecydowano, że Archiwista nie będzie domyślnie śledził poprzednich posiadaczy tytułów państwowych. Kronika opisuje jedną linię narracyjną rodu: kolejne grywalne postacie wywodzące się od pierwszego bohatera kroniki.
 
 Domyślny raport ma więc dotyczyć poprzedniego zmarłego, grywalnego przodka aktualnej postaci, niezależnie od płci. Historia państw i tytułów pozostaje potencjalnym dodatkiem, ale nie decyduje o wyborze bohatera księgi.
+
+## 2026-07-03 — Normalizacja nazw
+
+Od v0.5.1 Archiwista zachowuje surową nazwę z save'a, ale do raportu generuje także nazwę wyświetlaną (`display_name`).
+
+Wprowadzone mapowanie obsługuje zaobserwowany w save'ach zapis znaków diakrytycznych, np. `BolesL_aw` → `Bolesław`.
+
+Normalizacja ma być jawna, konserwatywna i rozszerzana tylko na podstawie rzeczywistych save'ów.

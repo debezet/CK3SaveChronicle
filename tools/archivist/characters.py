@@ -2,12 +2,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import re
 from . import pdx
+from .names import normalize_name
 
 @dataclass
 class Character:
     id: int
     raw: str
     name: str | None = None
+    display_name: str | None = None
     birth: str | None = None
     death: str | None = None
     death_reason: str | None = None
@@ -28,6 +30,7 @@ def parse_character(cid: int, raw: str) -> Character:
     def maybe_int(x):
         return int(x) if x and x.isdigit() else None
 
+    raw_name = pdx.scalar(raw, "first_name") or pdx.scalar(raw, "name")
     dead_data = pdx.named_block(raw, "dead_data")
     death = pdx.scalar(raw, "death")
     death_reason = pdx.scalar(raw, "death_reason")
@@ -45,7 +48,8 @@ def parse_character(cid: int, raw: str) -> Character:
     return Character(
         id=cid,
         raw=raw,
-        name=pdx.scalar(raw, "first_name") or pdx.scalar(raw, "name"),
+        name=raw_name,
+        display_name=normalize_name(raw_name),
         birth=pdx.scalar(raw, "birth"),
         death=death,
         death_reason=death_reason,
@@ -80,39 +84,29 @@ class CharacterIndex:
         c = self.get(cid)
         if not c:
             return str(cid) if cid is not None else "brak danych"
-        return f"{c.name or '?'} ({c.id})"
+        return f"{c.display_name or c.name or '?'} ({c.id})"
 
     def parents_of(self, child_id: int) -> list[Character]:
-        """Return known parents.
-
-        Prefer explicit father/mother fields, but also use inverse child lists as
-        fallback because CK3 saves may omit or encode relations inconsistently.
-        """
         out: list[Character] = []
         child = self.get(child_id)
-
         if child:
             for pid in [child.father, child.mother]:
                 p = self.get(pid)
                 if p and p.id not in {x.id for x in out}:
                     out.append(p)
-
         for pid in self.parent_candidates.get(child_id, []):
             p = self.get(pid)
             if p and p.id not in {x.id for x in out}:
                 out.append(p)
-
         return out
 
 def build_index(gamestate: str) -> CharacterIndex:
     idx = CharacterIndex()
     seen = set()
-
     for section_name in ["living", "dead_unprunable", "dead_prunable", "characters"]:
         section = pdx.named_block(gamestate, section_name)
         if not section:
             continue
-
         for cid, raw in pdx.iter_id_blocks(section):
             if cid in seen:
                 continue
@@ -120,7 +114,6 @@ def build_index(gamestate: str) -> CharacterIndex:
                 continue
             seen.add(cid)
             idx.add(parse_character(cid, raw))
-
     return idx
 
 def find_current_id(gamestate: str) -> int | None:
@@ -132,16 +125,13 @@ def find_current_id(gamestate: str) -> int | None:
         r'player\s*=\s*\{\s*id\s*=\s*(\d+)',
         r'meta_main_portrait\s*=\s*\{.*?\bid\s*=\s*(\d+)',
     ]
-
     for pat in patterns:
         m = re.search(pat, gamestate, re.S)
         if m:
             return int(m.group(1))
-
     return None
 
 def _date_key(date: str | None) -> tuple[int, int, int]:
-    """Parse CK3 date-ish strings like 1046.6.2 into sortable tuple."""
     if not date:
         return (0, 0, 0)
     nums = [int(x) for x in re.findall(r'\d+', date)[:3]]
@@ -150,13 +140,8 @@ def _date_key(date: str | None) -> tuple[int, int, int]:
     return tuple(nums[:3])
 
 def ancestors_of(character: Character, idx: CharacterIndex, max_depth: int = 20) -> list[Character]:
-    """Return all known ancestors of a character.
-
-    Uses both explicit father/mother links and inverse child-list links.
-    """
     seen: set[int] = set()
     result: list[Character] = []
-
     def walk(c: Character, depth: int):
         if depth >= max_depth:
             return
@@ -166,49 +151,24 @@ def ancestors_of(character: Character, idx: CharacterIndex, max_depth: int = 20)
             seen.add(parent.id)
             result.append(parent)
             walk(parent, depth + 1)
-
     walk(character, 0)
     return result
 
 def find_previous_chronicle_subject(current: Character, idx: CharacterIndex) -> Character | None:
-    """Find the previous chronicle subject.
-
-    This is not the previous title holder and not automatically the father.
-    The chronicle follows the player/narrative line: the direct chain of
-    playable characters leading to the current character.
-
-    Best-effort algorithm:
-    1. gather all known ancestors of current;
-    2. prefer dead ancestors marked `was_playable=yes`;
-    3. prefer same dynasty house when available;
-    4. choose the one with the latest death date.
-
-    This supports female rulers and non-father succession while avoiding the
-    v0.4.x bug where the mother was chosen only because she listed current as a
-    child.
-    """
     ancestors = ancestors_of(current, idx)
-
     if not ancestors:
         return None
-
     candidates = [a for a in ancestors if a.was_playable and a.death]
-
     if current.dynasty_house:
         same_house = [a for a in candidates if a.dynasty_house == current.dynasty_house]
         if same_house:
             candidates = same_house
-
     if candidates:
         return max(candidates, key=lambda c: (_date_key(c.death), len(c.memories)))
-
-    # Fallback for saves where was_playable is absent: choose latest dead ancestor.
     dead_ancestors = [a for a in ancestors if a.death]
     if dead_ancestors:
         return max(dead_ancestors, key=lambda c: (_date_key(c.death), len(c.memories)))
-
     return None
 
-# Backward-compatible alias for CLI v0.4.x.
 def infer_previous_ruler(current: Character, idx: CharacterIndex) -> Character | None:
     return find_previous_chronicle_subject(current, idx)

@@ -67,3 +67,17 @@ Domyślny tryb szuka **poprzedniego bohatera kroniki**:
 4. preferuje tę samą gałąź/dynasty house, jeśli dane są dostępne.
 
 Dzięki temu workflow obsługuje również dziedziczki i sukcesję przez matkę, a jednocześnie nie miesza kroniki rodu z historią tytułów państwowych.
+
+## v0.5.1
+
+Dodano normalizację nazw postaci do raportów.
+
+Przykłady:
+
+- `BolesL_aw` → `Bolesław`
+- `StanisL_aw` → `Stanisław`
+- `MaL_gorzata` → `Małgorzata`
+- `SzczE_sny` → `Szczęsny`
+- `GerrO_c` → `Gerróc`
+
+Parser zachowuje surową nazwę w polu `name`, ale raport używa `display_name`. Jeśli nazwa została zmieniona przez normalizację, raport pokazuje także `Imię w save`.
